@@ -1,0 +1,3 @@
+<launch>
+  <node name="omnidata_node" pkg="perception" type="publish_depth_normal.py" output="screen" />
+</launch>
