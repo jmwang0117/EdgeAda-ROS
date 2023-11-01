@@ -1,0 +1,2 @@
+perception
+-DCATKIN_DEVEL_PREFIX=/root/Edge_Adapter/devel -DCMAKE_INSTALL_PREFIX=/root/Edge_Adapter/install -G Unix Makefiles
