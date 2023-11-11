@@ -1,0 +1,3 @@
+<launch>
+  <node name="semantic_node" pkg="perception" type="publish_semantic.py" output="screen" />
+</launch>
