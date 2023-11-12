@@ -76,6 +76,9 @@ class DeepLabV3:
 
         # Set up CV bridge
         self.bridge = CvBridge()
+        
+        # Set up the subscriber for the RGB images
+        self.image_sub = rospy.Subscriber('/camera/color/image_rect_color', Image, self.image_callback)
 
         # Set up the publisher for the semantic segmentation results
         self.semantic_pub = rospy.Publisher('/semantic', Image, queue_size=1)
@@ -115,6 +118,24 @@ class DeepLabV3:
 
         return colorized_mask
     
+    def image_callback(self, msg):
+        try:
+            # Convert the ROS image message to OpenCV format
+            cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+        except CvBridgeError as e:
+            rospy.logerr("CvBridge Error: {0}".format(e))
+            return
+
+        # Process the frame and publish the results
+        colorized_mask = self.process_frame(cv_image)
+
+        try:
+            # Publish the semantic segmentation result
+            semantic_msg = self.bridge.cv2_to_imgmsg(colorized_mask, "bgr8")
+            self.semantic_pub.publish(semantic_msg)
+        except CvBridgeError as e:
+            rospy.logerr("CvBridge Error: {0}".format(e))
+
 
     def run(self):
         # Open the camera device
@@ -154,6 +175,7 @@ class DeepLabV3:
 if __name__ == '__main__':
     try:
         deep_lab_node = DeepLabV3()
-        deep_lab_node.run()
+        #deep_lab_node.run()
+        rospy.spin()
     except rospy.ROSInterruptException:
         pass
